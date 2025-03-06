@@ -1,27 +1,66 @@
 import cv2 
 import numpy as np
+## https://stackoverflow.com/questions/66269063/extract-circles-from-one-image-after-have-apply-the-circular-hough-transform 
+
+file = "patient1/photos/frame_272.jpg"
+
+image = cv2.imread(file)
+
+# Convert to grayscale
+gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+circles = cv2.HoughCircles(gray,
+                           cv2.HOUGH_GRADIENT,
+                           15,
+                           100,
+                           minRadius=300,
+                           maxRadius=350
+                           )
+
+# Here are your circles:
+circles = np.uint16(np.around(circles))
+
+# Get input size:
+dimensions = image.shape
+
+# height, width
+height = image.shape[0]
+width = image.shape[1]
+
+# Prepare a list to store each ROI:
+lemonROIs = []
 
 
+for i in circles[0, :]:
 
-capture = cv2.VideoCapture("patient1/mar4.mp4")
+    # Prepare a black canvas:
+    canvas = np.zeros((height, width))
 
-backSub = cv2.createBackgroundSubtractorKNN()
+    # Draw the outer circle:
+    color = (255, 255, 255)
+    thickness = -1
+    centerX = i[0]
+    centerY = i[1]
+    radius = i[2]
+    cv2.circle(canvas, (centerX, centerY), radius, color, thickness)
 
-if not capture.isOpened():
-    print('Unable to open: ')
-    exit(0)
-while True:
-    ret, frame = capture.read()
-    if frame is None:
-        break
+    # Create a copy of the input and mask input:
+    imageCopy = image.copy()
+    imageCopy[canvas == 0] = (0, 0, 0)
 
-    fgMask = backSub.apply(frame)
-    cv2.namedWindow('frame',cv2.WINDOW_NORMAL)
-    cv2.imshow('frame', frame)
+    # Crop the roi:
+    x = centerX - radius
+    y = centerY - radius
+    h = 2 * radius
+    w = 2 * radius
 
-    cv2.namedWindow('FG Mask',cv2.WINDOW_NORMAL)
-    cv2.imshow('FG Mask', fgMask)
+    croppedImg = imageCopy[y:y + h, x:x + w]
+    cv2.imwrite(('circles/c_'+str(i)+'.jpg'),croppedImg)
+    cv2.imshow('circle', croppedImg)
     
+
     keyboard = cv2.waitKey(30)
     if keyboard == 'q' or keyboard == 27:
-        break
+        cv2.destroyAllWindows()
+    # Store the ROI:
+    lemonROIs.append(croppedImg)
