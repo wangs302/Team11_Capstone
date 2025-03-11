@@ -1,0 +1,763 @@
+import 'dart:io';
+import 'package:english_words/english_words.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:video_player/video_player.dart';
+import 'package:camera/camera.dart';
+
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData.dark(),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => WelcomePage(),
+        '/login': (context) => LoginPage(),
+        '/home': (context) => HomePage(),
+        '/signup': (context) => SignUpPage(),
+        '/password': (context) => PasswordPage(),
+        '/disclaimer': (context) => DisclaimerPage(),
+        '/device-setup': (context) => SetupPage(),
+        '/camera': (context) => CameraPage(),
+        // '/patient-list': (context) => PatientPage(),
+      },
+    );
+  }
+}
+
+// class MyAppState extends ChangeNotifier {
+//   var current = WordPair.random();
+// }
+
+class WelcomePage extends StatelessWidget{
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CircleAvatar(
+              radius: 60,
+              backgroundColor: Colors.white,
+              child: Icon(Icons.camera_alt, size: 60, color: Colors.black),
+            ),
+            SizedBox(height: 20),
+            Text(
+              'OptiScan',
+              style: TextStyle(fontSize: 30, color: Colors.white),
+            ),
+            SizedBox(height:40),
+            ElevatedButton(
+              onPressed: () => Navigator.pushNamed(context,'/login'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.brown,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 60, vertical: 15),
+                child: Text('Log In', style: TextStyle(fontSize:22, color: Colors.white)),
+              ),
+            ),
+            SizedBox(height:20),
+            ElevatedButton(
+              onPressed: () => Navigator.pushNamed(context, '/signup'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.lightBlue,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal:55, vertical: 15),
+                child: Text('Sign Up', style: TextStyle(fontSize: 20, color: Colors.white)),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+
+class LoginPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            TextField(
+              decoration: InputDecoration(
+                labelText: 'Email',
+                labelStyle: TextStyle(color: Colors.white),
+                filled: true,
+                fillColor: Colors.grey[850],
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+              ),
+            ),
+            SizedBox(height: 20),
+            TextField(
+              decoration: InputDecoration(
+                labelText: 'Password',
+                labelStyle: TextStyle(color: Colors.white),
+                filled: true,
+                fillColor: Colors.grey[850],
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+              ),
+              obscureText: true,
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () => Navigator.pushNamed(context, '/home'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.brown,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 15),
+                child: Text('Sign In', style: TextStyle(fontSize: 20, color: Colors.white)),
+              ),
+            ),
+            SizedBox(height: 10),
+            TextButton(
+              onPressed: () => Navigator.pushNamed(context, '/password'),
+              child: Text(
+                'Forgot password?',
+                style: TextStyle(color: Colors.white70),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+
+class SignUpPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              'Create an account.',
+              style: TextStyle(fontSize: 24, color: Colors.white),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 20),
+            ...['First Name', 'Last Name', 'Gender', 'Date of Birth', 'E-mail', 'Password', 'Re-type password']
+                .map((label) => Padding(
+              padding: const EdgeInsets.only(bottom: 15),
+              child: TextField(
+                decoration: InputDecoration(
+                  labelText: label,
+                  labelStyle: TextStyle(color: Colors.white),
+                  filled: true,
+                  fillColor: Colors.grey[850],
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                ),
+                obscureText: label.toLowerCase().contains('password'),
+              ),
+            ))
+                .toList(),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () => Navigator.pushNamed(context,'/login'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.brown,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 15),
+                child: Text('Submit', style: TextStyle(fontSize: 20, color: Colors.white)),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+
+class HomePage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            ElevatedButton(
+              onPressed: () => Navigator.pushNamed(context, '/disclaimer'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.brown,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 15),
+                child: Text('Create New Scan', style: TextStyle(fontSize: 18, color: Colors.white)),
+              ),
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {},
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.brown,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 15),
+                child: Text('View Files', style: TextStyle(fontSize: 18, color: Colors.white)),
+              ),
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {},
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.brown,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 15),
+                child: Text('Training Module', style: TextStyle(fontSize: 18, color: Colors.white)),
+              ),
+            ),
+            SizedBox(height: 40),
+            ElevatedButton(
+              onPressed: () => Navigator.pop(context),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.grey,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.arrow_back, color: Colors.black),
+                  SizedBox(width: 10),
+                  Text('Back', style: TextStyle(color: Colors.black, fontSize: 20)),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class PasswordPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              'Forgot your password.',
+              style: TextStyle(fontSize: 24, color: Colors.white),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 10),
+            Text(
+              'Please enter the email associated with the account who’s password you want to reset.',
+              style: TextStyle(fontSize: 14, color: Colors.white),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 20),
+            TextField(
+              decoration: InputDecoration(
+                labelText: 'Email',
+                labelStyle: TextStyle(color: Colors.white),
+                filled: true,
+                fillColor: Colors.grey[850],
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+              ),
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {},
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.brown,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 15),
+                child: Text('Send E-mail', style: TextStyle(fontSize: 16, color: Colors.white)),
+              ),
+            ),
+            SizedBox(height: 10),
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text(
+                'Return to login',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class DisclaimerPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Retina Scan Consent"),
+        backgroundColor: Colors.indigo,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                "Please read the following information carefully before your retina scan:",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 10),
+              _buildSection(
+                "1. Purpose of the Scan:",
+                "The retina scan is a non-invasive diagnostic procedure designed to capture detailed images of the retina, allowing us to assess the health of your eyes and identify any potential issues.",
+              ),
+              _buildSection(
+                "2. Procedure and Expectations:",
+                "During the scan, you may be asked to look at a series of lights. The procedure is generally quick and painless, though you may experience brief, mild discomfort from the lights.",
+              ),
+              _buildSection(
+                "3. Potential Risks and Side Effects:",
+                "While retina scans are safe and involve no direct contact with the eye, some patients may experience temporary visual disturbances or light sensitivity following the scan. These effects typically subside within a few minutes. Please let us know if you feel any prolonged discomfort.",
+              ),
+              _buildSection(
+                "4. Limitations of the Scan:",
+                "This retina scan is intended as a diagnostic tool and does not replace a full eye examination by an eye care professional. Additional tests may be required to complete your diagnosis or treatment plan.",
+              ),
+              _buildSection(
+                "5. Consent:",
+                "By proceeding with the retina scan, you acknowledge that you have read and understand this information and consent to the procedure.",
+              ),
+              const SizedBox(height: 10),
+              const Text(
+                "If you have any questions or concerns about the retina scan, please feel free to ask our team before proceeding.",
+                style: TextStyle(fontSize: 16),
+              ),
+              const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.brown,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 30, vertical: 12),
+                    ),
+                    onPressed: () => Navigator.pushNamed(context,'/device-setup'),
+                    child: const Text("I Agree",
+                        style: TextStyle(fontSize: 20, color: Colors.white)),
+                  ),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.brown,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 30, vertical: 12),
+                    ),
+                    onPressed: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                            content: Text("You disagreed to proceed.")),
+                      );
+                    },
+                    child: const Text("I Disagree",
+                        style: TextStyle(fontSize: 20, color: Colors.white)),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.grey,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.arrow_back, color: Colors.black),
+                    SizedBox(width: 10),
+                    Text('Back', style: TextStyle(color: Colors.black, fontSize: 20)),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSection(String title, String content) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: RichText(
+        text: TextSpan(
+          style: const TextStyle(fontSize: 15, color: Colors.white),
+          children: [
+            TextSpan(
+              text: "$title ",
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+            TextSpan(text: content),
+          ],
+        ),
+      ),
+    );
+  }
+
+}
+
+class SetupPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: Padding(
+        padding: EdgeInsets.all(20),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            SizedBox(height: 80),
+            _buildChecklistItem(Icons.link, "Check smartphone connection with the lens housing."),
+            _buildChecklistItem(Icons.camera, "Check camera settings, including zoom and flashlight."),
+            _buildChecklistItem(Icons.remove_red_eye, "Check camera focal point with patient’s eye position."),
+            SizedBox(height: 50),
+            ElevatedButton(
+              onPressed: () => Navigator.pushNamed(context, '/camera'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.brown,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                child: Text('Proceed to Camera', style: TextStyle(fontSize: 20, color: Colors.white)),
+              ),
+            ),
+            SizedBox(height: 30),
+            ElevatedButton(
+              onPressed: () => Navigator.pop(context),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.grey,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.arrow_back, color: Colors.black),
+                  SizedBox(width: 10),
+                  Text('Back', style: TextStyle(color: Colors.black, fontSize: 20)),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildChecklistItem(IconData icon, String text) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: Row(
+        children: [
+          Icon(icon, color: Colors.white),
+          SizedBox(width: 10),
+          Expanded(
+            child: Text(text, style: TextStyle(color: Colors.white, fontSize: 24)),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+
+// CameraPage starts
+
+class CameraPage extends StatefulWidget {
+  const CameraPage({super.key});
+
+  @override
+  CameraPageState createState() => CameraPageState();
+}
+
+class CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
+  CameraController? _controller;
+  bool _isCameraInitialized = false;
+  late final List<CameraDescription> _cameras;
+  bool _isRecording = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    initCamera();
+  }
+
+  Future<void> initCamera() async {
+    _cameras = await availableCameras();
+    // Initialize the camera with the first camera in the list
+    await onNewCameraSelected(_cameras.first);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // App state changed before we got the chance to initialize.
+    final CameraController? cameraController = _controller;
+
+    // App state changed before we got the chance to initialize.
+    if (cameraController == null || !cameraController.value.isInitialized) {
+      return;
+    }
+
+    if (state == AppLifecycleState.inactive) {
+      // Free up memory when camera not active
+      cameraController.dispose();
+    } else if (state == AppLifecycleState.resumed) {
+      // Reinitialize the camera with same properties
+      onNewCameraSelected(cameraController.description);
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller?.dispose();
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  Future<XFile?> captureVideo() async {
+    final CameraController? cameraController = _controller;
+    try {
+      setState(() {
+        _isRecording = true;
+      });
+      await cameraController?.startVideoRecording();
+      await Future.delayed(const Duration(seconds: 5));
+      final video = await cameraController?.stopVideoRecording();
+      setState(() {
+        _isRecording = false;
+      });
+      return video;
+    } on CameraException catch (e) {
+      debugPrint('Error: $e');
+      return null;
+    }
+  }
+
+  void _onRecordVideoPressed() async {
+    final navigator = Navigator.of(context);
+    final xFile = await captureVideo();
+    if (xFile != null) {
+      if (xFile.path.isNotEmpty) {
+        navigator.push(
+          MaterialPageRoute(
+            builder: (context) => PreviewPage(
+              videoPath: xFile.path,
+            ),
+          ),
+        );
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_isCameraInitialized) {
+      return SafeArea(
+        child: Scaffold(
+          body: Column(
+            children: [
+              CameraPreview(_controller!),
+              const SizedBox(
+                height: 35,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  if (!_isRecording) const SizedBox(width: 15),
+                  ElevatedButton(
+                    onPressed:_isRecording? null: _onRecordVideoPressed,
+                    style: ElevatedButton.styleFrom(
+                        fixedSize: const Size(70, 70),
+                        shape: const CircleBorder(),
+                        backgroundColor: Colors.white),
+                    child: Icon(
+                      _isRecording ? Icons.stop : Icons.videocam,
+                      color: Colors.red,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      );
+    } else {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    }
+  }
+
+  Future<void> onNewCameraSelected(CameraDescription description) async {
+    final previousCameraController = _controller;
+
+    // Instantiating the camera controller
+    final CameraController cameraController = CameraController(
+      description,
+      ResolutionPreset.high,
+      imageFormatGroup: ImageFormatGroup.jpeg,
+    );
+
+    // Initialize controller
+    try {
+      await cameraController.initialize();
+    } on CameraException catch (e) {
+      debugPrint('Error initializing camera: $e');
+    }
+    // Dispose the previous controller
+    await previousCameraController?.dispose();
+
+    // Replace with the new controller
+    if (mounted) {
+      setState(() {
+        _controller = cameraController;
+      });
+    }
+
+    // Update UI if controller updated
+    cameraController.addListener(() {
+      if (mounted) setState(() {});
+    });
+
+    // Update the Boolean
+    if (mounted) {
+      setState(() {
+        _isCameraInitialized = _controller!.value.isInitialized;
+      });
+    }
+  }
+}
+
+class PreviewPage extends StatefulWidget {
+  final String? imagePath;
+  final String? videoPath;
+
+  const PreviewPage({Key? key, this.imagePath, this.videoPath})
+      : super(key: key);
+
+  @override
+  State<PreviewPage> createState() => _PreviewPageState();
+}
+
+class _PreviewPageState extends State<PreviewPage> {
+  VideoPlayerController? controller;
+
+  Future<void> _startVideoPlayer() async {
+    if (widget.videoPath != null) {
+      controller = VideoPlayerController.file(File(widget.videoPath!));
+      await controller!.initialize().then((_) {
+        // Ensure the first frame is shown after the video is initialized,
+        // even before the play button has been pressed.
+        setState(() {});
+      });
+      await controller!.setLooping(true);
+      await controller!.play();
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.videoPath != null) {
+      _startVideoPlayer();
+    }
+  }
+
+  @override
+  void dispose() {
+    controller?.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: widget.imagePath != null
+            ? Image.file(
+          File(widget.imagePath ?? ""),
+          fit: BoxFit.cover,
+        )
+            : AspectRatio(
+          aspectRatio: controller!.value.aspectRatio,
+          child: VideoPlayer(controller!),
+        ),
+      ),
+    );
+  }
+}
