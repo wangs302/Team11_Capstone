@@ -703,6 +703,8 @@ class CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
   }
 }
 
+//preview video page post recording
+
 class PreviewPage extends StatefulWidget {
   final String? imagePath;
   final String? videoPath;
