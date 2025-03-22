@@ -2,7 +2,7 @@ import cv2
 import os
 
 
-def save_images(video_path,t_start,t_stop,photo_path):
+def save_images(video_path,photo_path,t_start,t_stop):
     cap = cv2.VideoCapture(video_path)
 
     if cap.isOpened():
@@ -29,7 +29,7 @@ def save_images(video_path,t_start,t_stop,photo_path):
     cap.release()
 
 
-save_images("patient1/jan27.mp4",0.5,0.6,"patient1/photos/")
+save_images("patient1/20250304_160003.mp4","patient1/photos/",9.1,9.2)
 
 
 
