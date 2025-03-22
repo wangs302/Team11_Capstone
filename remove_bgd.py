@@ -1,67 +1,86 @@
 import cv2 
 import numpy as np
-## https://stackoverflow.com/questions/66269063/extract-circles-from-one-image-after-have-apply-the-circular-hough-transform 
 
+'''
+Adapted from: https://stackoverflow.com/questions/66269063/extract-circles-from-one-image-after-have-apply-the-circular-hough-transform 
+and https://stackoverflow.com/questions/70659992/how-to-improve-accuracy-of-cv2s-houghcircles 
+
+Uses the cv2 function HoughCircles to pick out circular objects in an image. Meant to remove the background from the tunnel to extract just the image of the eye and put it on a black background.
+
+'''
 
 def remove_bgd(file):
     image = cv2.imread(file)
 
-    # convert to grayscale
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    if image is not None:
+        # convert to grayscale
+        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
-    circles = cv2.HoughCircles(gray,
-                            cv2.HOUGH_GRADIENT,
-                            15,
-                            100,
-                            minRadius=150,
-                            maxRadius=450
-                            )
+        hist = cv2.equalizeHist(gray)
 
-    circles = np.uint16(np.around(circles))
+        blur = cv2.GaussianBlur(hist, (31,31), cv2.BORDER_DEFAULT)
+        h,w = blur.shape[:2]
 
-    # input size
-    dimensions = image.shape
+        minR = round(w/5)
+        maxR = round(w/4)
+        minDis = round(w/7)
 
-    # height, width
-    height = image.shape[0]
-    width = image.shape[1]
+        circles = cv2.HoughCircles(gray,
+                                cv2.HOUGH_GRADIENT,
+                                1,
+                                minDis,
+                                param1=15,
+                                param2=50,
+                                minRadius=minR,
+                                maxRadius=maxR
+                                )
 
-    # list to store ROIs
-    ROIs = []
+        circles = np.uint16(np.around(circles))
 
+        # input size
+        dimensions = image.shape
 
-    for i in circles[0, :]:
+        # height, width
+        height = dimensions[0]
+        width = dimensions[1]
 
-        # start with a black canvas:
-        canvas = np.zeros((height, width))
+        for i in circles[0, :]:
 
-        # Draw the outer circle:
-        color = (255, 255, 255)
-        thickness = -1
-        centerX = i[0]
-        centerY = i[1]
-        radius = i[2]
-        cv2.circle(canvas, (centerX, centerY), radius, color, thickness)
+            # start with a black canvas:
+            canvas = np.zeros((height, width))
 
-        # create a copy of the input and mask input:
-        imageCopy = image.copy()
-        imageCopy[canvas == 0] = (0, 0, 0)
+            # Draw the outer circle:
+            color = (255, 255, 255)
+            thickness = -1
+            centerX = int(i[0])
+            centerY = int(i[1])
+            radius = int(i[2])
+            cv2.circle(canvas, (centerX, centerY), radius, color, thickness)
 
-        # crop the roi:
-        x = centerX - radius
-        y = centerY - radius
-        h = 2 * radius
-        w = 2 * radius
+            # create a copy of the input and mask input:
+            imageCopy = image.copy()
+            imageCopy[canvas == 0] = (0, 0, 0)
 
-        croppedImg = imageCopy[y:y + h, x:x + w]
-        cv2.imwrite(('circles/c_'+str(i)+'.jpg'),croppedImg)
-        cv2.imshow('circle', croppedImg)
+            # crop the roi:
+            x = centerX - radius
+            y = centerY - radius
+            h1 = 2 * radius
+            w1 = 2 * radius
+
+            croppedImg = imageCopy[y:y + h1, x:x + w1]
+            if croppedImg.size==0:
+                print("empty image")
+            else:
+                cv2.imwrite(('circles/c_'+str(i)+'.jpg'),croppedImg)
+
+            '''
+            cv2.imshow('circle', croppedImg)
+            keyboard = cv2.waitKey(30)
+            if keyboard == 'q' or keyboard == 27:
+                cv2.destroyAllWindows()
+            '''
+    else:
+        print("empty image")
         
 
-        keyboard = cv2.waitKey(30)
-        if keyboard == 'q' or keyboard == 27:
-            cv2.destroyAllWindows()
-        # Store the ROI:
-        ROIs.append(croppedImg)
-
-file = "patient1/photos/frame_272.jpg"
+remove_bgd('patient1/photos/frame_272.jpg')
