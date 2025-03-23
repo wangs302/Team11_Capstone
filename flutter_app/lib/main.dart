@@ -808,7 +808,18 @@ class CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
         child: Scaffold(
           body: Column(
             children: [
-              CameraPreview(_controller!),
+              ClipRRect(
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(250.0),
+                  topRight: Radius.circular(250.0),
+                  bottomRight: Radius.circular(250.0),
+                  bottomLeft: Radius.circular(250.0),
+                ),
+                child: AspectRatio(
+                  aspectRatio: 1,
+                  child: CameraPreview(_controller!),
+                ),
+              ),
               const SizedBox(
                 height: 35,
               ),
