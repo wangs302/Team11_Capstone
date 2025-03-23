@@ -808,6 +808,9 @@ class CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
         child: Scaffold(
           body: Column(
             children: [
+              const SizedBox(
+                height: 75,
+              ),
               ClipRRect(
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(250.0),
@@ -853,6 +856,22 @@ class CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
                   )
                 ],
               ),
+              const SizedBox(
+                height: 35,
+              ),
+                ElevatedButton(
+                  onPressed: () => Navigator.pushNamed(context,'/home'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.brown,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                    child: Text('Finish Scan', style: TextStyle(fontSize: 20, color: Colors.white)),
+                  ),
+                ),
             ],
           ),
         ),
@@ -968,20 +987,6 @@ class _PreviewPageState extends State<PreviewPage> {
                   ),
                 ),
                 SizedBox(height:100),
-                ElevatedButton(
-                  onPressed: () => Navigator.pushNamed(context,'/home'),
-
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.brown,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-                    child: Text('Finish Scan', style: TextStyle(fontSize: 20, color: Colors.white)),
-                  ),
-                ),
 
               ],
             )
