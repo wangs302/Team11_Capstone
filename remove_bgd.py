@@ -1,6 +1,6 @@
 import cv2 
 import numpy as np
-
+import os
 '''
 Adapted from: https://stackoverflow.com/questions/66269063/extract-circles-from-one-image-after-have-apply-the-circular-hough-transform 
 and https://stackoverflow.com/questions/70659992/how-to-improve-accuracy-of-cv2s-houghcircles 
@@ -9,8 +9,21 @@ Uses the cv2 function HoughCircles to pick out circular objects in an image. Mea
 
 '''
 
-def remove_bgd(file):
+def frame_num(file):
+    directory = file.split('/')
+    img = str(directory[-1])
+    frame = str(img.split('.')[0])
+
+    return frame
+
+def remove_bgd(file,photo_path):
     image = cv2.imread(file)
+
+    try:
+        os.makedirs(photo_path+'processed/')
+    except FileExistsError:
+        # directory already exists
+        pass
 
     if image is not None:
         # convert to grayscale
@@ -25,11 +38,11 @@ def remove_bgd(file):
         maxR = round(w/4)
         minDis = round(w/7)
 
-        circles = cv2.HoughCircles(gray,
+        circles = cv2.HoughCircles(blur,
                                 cv2.HOUGH_GRADIENT,
                                 1,
                                 minDis,
-                                param1=15,
+                                param1=1,
                                 param2=50,
                                 minRadius=minR,
                                 maxRadius=maxR
@@ -71,16 +84,18 @@ def remove_bgd(file):
             if croppedImg.size==0:
                 print("empty image")
             else:
-                cv2.imwrite(('circles/c_'+str(i)+'.jpg'),croppedImg)
+                f = frame_num(file)
+                cv2.imwrite((photo_path+'processed/'+f+'_'+str(i)+'.jpg'),croppedImg)
 
-            '''
+            
             cv2.imshow('circle', croppedImg)
             keyboard = cv2.waitKey(30)
             if keyboard == 'q' or keyboard == 27:
                 cv2.destroyAllWindows()
-            '''
+            
     else:
         print("empty image")
         
 
-remove_bgd('patient1/photos/frame_272.jpg')
+remove_bgd('patient1/photos/raw/frame_15.jpg','patient1/photos/')
+#remove_bgd('patient1/photos/frame_15.jpg')
