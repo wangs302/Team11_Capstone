@@ -31,7 +31,7 @@ def remove_bgd(file,photo_path):
 
         hist = cv2.equalizeHist(gray)
 
-        blur = cv2.GaussianBlur(hist, (31,31), cv2.BORDER_DEFAULT)
+        blur = cv2.GaussianBlur(hist, (15,15), cv2.BORDER_DEFAULT)
         h,w = blur.shape[:2]
 
         minR = round(w/5)
@@ -97,5 +97,5 @@ def remove_bgd(file,photo_path):
         print("empty image")
         
 
-remove_bgd('patient1/photos/raw/frame_15.jpg','patient1/photos/')
+remove_bgd('patient1/photos/frame_15.jpg','patient1/photos/')
 #remove_bgd('patient1/photos/frame_15.jpg')
