@@ -757,15 +757,8 @@ class CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
   Future<XFile?> captureVideo() async {
     final CameraController? cameraController = _controller;
     try {
-      setState(() {
-        _isRecording = true;
-      });
-      await cameraController?.startVideoRecording();
-      await Future.delayed(const Duration(seconds: 5));
-      final video = await cameraController?.stopVideoRecording();
-      setState(() {
-        _isRecording = false;
-      });
+      final video = await cameraController?.takePicture();
+
       return video;
     } on CameraException catch (e) {
       debugPrint('Error: $e');
@@ -777,12 +770,12 @@ class CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
     final navigator = Navigator.of(context);
     final xFile = await captureVideo();
     if (xFile != null) {
-      Gal.putVideo(xFile.path);
+      Gal.putImage(xFile.path);
       if (xFile.path.isNotEmpty) {
         navigator.push(
           MaterialPageRoute(
             builder: (context) => PreviewPage(
-              videoPath: xFile.path,
+              imagePath: xFile.path,
             ),
           ),
         );
@@ -924,74 +917,41 @@ class CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
   }
 }
 
-class PreviewPage extends StatefulWidget {
-  final String? imagePath;
-  final String? videoPath;
-
-  const PreviewPage({Key? key, this.imagePath, this.videoPath})
-      : super(key: key);
-
-  @override
-  State<PreviewPage> createState() => _PreviewPageState();
-}
-
-class _PreviewPageState extends State<PreviewPage> {
-  VideoPlayerController? controller;
-
-  Future<void> _startVideoPlayer() async {
-    if (widget.videoPath != null) {
-      controller = VideoPlayerController.file(File(widget.videoPath!));
-      await controller!.initialize().then((_) {
-        // Ensure the first frame is shown after the video is initialized,
-        // even before the play button has been pressed.
-        setState(() {});
-      });
-      await controller!.setLooping(true);
-      await controller!.play();
-    }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    if (widget.videoPath != null) {
-      _startVideoPlayer();
-    }
-  }
-
-  @override
-  void dispose() {
-    controller?.dispose();
-    super.dispose();
-  }
+class PreviewPage extends StatelessWidget {
+  final String imagePath;
+  const PreviewPage({super.key, required this.imagePath});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.black,
-        body: Padding(
-            padding:  EdgeInsets.all(20),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Center(
-                  child: widget.imagePath != null
-                      ? Image.file(
-                    File(widget.imagePath ?? ""),
-                    fit: BoxFit.cover,
-                  )
-                      : AspectRatio(
-                    aspectRatio: controller!.value.aspectRatio,
-                    child: VideoPlayer(controller!),
-                  ),
-                ),
-                SizedBox(height:100),
+      appBar: AppBar(title: const Text('Preview')),
 
-              ],
-            )
-        )
-
+      backgroundColor: Colors.black,
+         body: Padding(
+             padding:  EdgeInsets.all(20),
+             child: Column(
+               mainAxisAlignment: MainAxisAlignment.center,
+               crossAxisAlignment: CrossAxisAlignment.stretch,
+               children: [
+                  Image.file(File(imagePath)),
+                  SizedBox(height:30),
+                  ElevatedButton(
+                   onPressed: () => Navigator.pushNamed(context,'/home'),
+ 
+                   style: ElevatedButton.styleFrom(
+                     backgroundColor: Colors.brown,
+                     shape: RoundedRectangleBorder(
+                       borderRadius: BorderRadius.circular(10),
+                     ),
+                   ),
+                   child: Padding(
+                     padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                     child: Text('Home', style: TextStyle(fontSize: 20, color: Colors.white)),
+                   ),
+                 ),
+               ]
+             )
+         )
     );
   }
 }
