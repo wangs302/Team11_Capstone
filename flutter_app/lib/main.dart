@@ -31,6 +31,8 @@ class MyApp extends StatelessWidget {
         '/device-setup': (context) => SetupPage(),
         '/camera': (context) => CameraPage(),
         '/patient-list': (context) => PatientPage(),
+        '/patient-file': (context) => PatientFilePage(),
+        '/file-gallery': (context) => FileGalleryPage(),
         '/training': (context) => TrainingPage(),
         // '/preview': (context) => PreviewPage(imagePath: imagePath),
       },
@@ -239,7 +241,7 @@ class HomePage extends StatelessWidget {
             ),
             SizedBox(height: 20),
             ElevatedButton(
-              onPressed: () => Navigator.pushNamed(context, '/patient-list'),
+              onPressed: () => Navigator.pushNamed(context, '/patient-file'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.brown,
                 shape: RoundedRectangleBorder(
@@ -702,6 +704,159 @@ class PatientPage extends StatelessWidget {
 }
 
 
+class PatientFilePage extends StatelessWidget {
+  final List<String> patients = [
+    'Bianca Ha',
+    'Derek Sanders',
+    'Finneas',
+    'Joanne Lee',
+    'Roxxannia Wang',
+    'Sabrina Carpenter',
+    'Sorina Andrei',
+    'S.Coups',
+    'Taylor Swift',
+    'Tiffany Leung'
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+
+        title: TextField(
+          decoration: InputDecoration(
+            hintText: 'Patient Name',
+            prefixIcon: Icon(Icons.menu, color: Colors.grey),
+            suffixIcon: Icon(Icons.search, color: Colors.grey),
+            filled: true,
+            fillColor: Colors.grey[850],
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide.none,
+            ),
+          ),
+        ),
+      ),
+
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(height: 10),
+
+            SizedBox(height: 20),
+            Expanded(
+              child: ListView.builder(
+                itemCount: patients.length,
+                itemBuilder: (context, index) {
+                  return GestureDetector(
+                    onTap: () => Navigator.pushNamed(context, '/file-gallery'),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      child: Text(
+                        patients[index],
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            SizedBox(height: 10),
+            Align(
+              alignment: Alignment.bottomLeft,
+              child: ElevatedButton(
+                onPressed: () => Navigator.pop(context),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.grey,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.arrow_back, color: Colors.black),
+                    SizedBox(width: 10),
+                    Text('Back', style: TextStyle(color: Colors.black, fontSize: 20)),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// FileGalleryPage
+
+class FileGalleryPage extends StatelessWidget {
+
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+
+        title: TextField(
+          decoration: InputDecoration(
+            hintText: 'Patient Name',
+            prefixIcon: Icon(Icons.menu, color: Colors.grey),
+            suffixIcon: Icon(Icons.search, color: Colors.grey),
+            filled: true,
+            fillColor: Colors.grey[850],
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide.none,
+            ),
+          ),
+        ),
+      ),
+
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(height: 10),
+
+
+            Align(
+              alignment: Alignment.bottomLeft,
+              child: ElevatedButton(
+                onPressed: () => Navigator.pop(context),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.grey,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.arrow_back, color: Colors.black),
+                    SizedBox(width: 10),
+                    Text('Back', style: TextStyle(color: Colors.black, fontSize: 20)),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
 
 
 class CameraPage extends StatefulWidget {
