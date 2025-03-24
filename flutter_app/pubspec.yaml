@@ -22,6 +22,7 @@ dependencies:
 
 #  path_provider: ^2.0.15
 #  gallery_saver: ^2.3.2
+  image: ^4.0.17
 
 
 dev_dependencies:

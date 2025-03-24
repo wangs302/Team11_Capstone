@@ -5,6 +5,8 @@ import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 import 'package:camera/camera.dart';
 import 'package:gal/gal.dart';
+import 'dart:ui' as ui;
+import 'dart:typed_data';
 
 void main() {
   runApp(MyApp());
@@ -30,6 +32,7 @@ class MyApp extends StatelessWidget {
         '/camera': (context) => CameraPage(),
         '/patient-list': (context) => PatientPage(),
         '/training': (context) => TrainingPage(),
+        // '/preview': (context) => PreviewPage(imagePath: imagePath),
       },
     );
   }
@@ -754,12 +757,12 @@ class CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
     super.dispose();
   }
 
-  Future<XFile?> captureVideo() async {
+  Future<XFile?> captureImage() async {
     final CameraController? cameraController = _controller;
     try {
-      final video = await cameraController?.takePicture();
+      final image = await cameraController?.takePicture();
 
-      return video;
+      return image;
     } on CameraException catch (e) {
       debugPrint('Error: $e');
       return null;
@@ -768,7 +771,7 @@ class CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
 
   void _onRecordVideoPressed() async {
     final navigator = Navigator.of(context);
-    final xFile = await captureVideo();
+    final xFile = await captureImage();
     if (xFile != null) {
       Gal.putImage(xFile.path);
       if (xFile.path.isNotEmpty) {
@@ -794,87 +797,143 @@ class CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
     }
   }
 
+
   @override
   Widget build(BuildContext context) {
     if (_isCameraInitialized) {
       return SafeArea(
         child: Scaffold(
-          body: Column(
-            children: [
-              const SizedBox(
-                height: 75,
-              ),
-              ClipRRect(
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(250.0),
-                  topRight: Radius.circular(250.0),
-                  bottomRight: Radius.circular(250.0),
-                  bottomLeft: Radius.circular(250.0),
-                ),
-                child: AspectRatio(
-                  aspectRatio: 1,
+          body: GestureDetector(
+            onTapUp: (details) => _setFocus(details, context),
+            child: Column(
+              children: [
+                Expanded(
                   child: CameraPreview(_controller!),
                 ),
-              ),
-              const SizedBox(
-                height: 35,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-
-                  if (!_isRecording) const SizedBox(width: 15),
-                  ElevatedButton(
-                    onPressed:_isRecording? null: _onRecordVideoPressed,
-                    style: ElevatedButton.styleFrom(
+                const SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton(
+                      onPressed: _onRecordVideoPressed,
+                      style: ElevatedButton.styleFrom(
                         fixedSize: const Size(70, 70),
                         shape: const CircleBorder(),
-                        backgroundColor: Colors.white),
-                    child: Icon(
-                      _isRecording ? Icons.stop : Icons.videocam,
-                      color: Colors.red,
+                        backgroundColor: Colors.white,
+                      ),
+                      child: const Icon(Icons.camera, color: Colors.black),
                     ),
-                  ),
-                  SizedBox(width:30),
-                  ElevatedButton(
+                    const SizedBox(width: 30),
+                    ElevatedButton(
                       onPressed: _Flashlight,
                       style: ElevatedButton.styleFrom(
-                          fixedSize: const Size(40,40),
-                          backgroundColor: Colors.black
+                        fixedSize: const Size(70, 70),
+                        shape: const CircleBorder(),
+                        backgroundColor: Colors.black,
                       ),
                       child: Icon(
                         _isFlashOn ? Icons.flash_on : Icons.flash_off,
                         color: _isFlashOn ? Colors.yellow : Colors.white,
-                      )
-                  )
-                ],
-              ),
-              const SizedBox(
-                height: 35,
-              ),
-                ElevatedButton(
-                  onPressed: () => Navigator.pushNamed(context,'/home'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.brown,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
+                      ),
                     ),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-                    child: Text('Finish Scan', style: TextStyle(fontSize: 20, color: Colors.white)),
-                  ),
+                  ],
                 ),
-            ],
+                const SizedBox(height: 35),
+              ],
+            ),
           ),
         ),
       );
     } else {
-      return const Center(
-        child: CircularProgressIndicator(),
-      );
+      return const Center(child: CircularProgressIndicator());
     }
   }
+
+
+  // @override
+  // Widget build(BuildContext context) {
+  //   if (_isCameraInitialized) {
+  //     return SafeArea(
+  //       child: Scaffold(
+  //         body: Column(
+  //           children: [
+  //             CameraPreview(_controller!),
+  //             // const SizedBox(
+  //             //   height: 75,
+  //             // ),
+  //             // ClipRRect(
+  //             //   borderRadius: BorderRadius.circular(300),
+  //             //   child: AspectRatio(
+  //             //     aspectRatio: _controller!.value.aspectRatio, // Preserve correct aspect ratio
+  //             //     child: CameraPreview(_controller!),
+  //             //   ),
+  //             // ),
+  //             const SizedBox(
+  //               height: 20,
+  //             ),
+  //             Row(
+  //               mainAxisAlignment: MainAxisAlignment.center,
+  //               children: [
+  //
+  //                 if (!_isRecording) const SizedBox(width: 5),
+  //                 ElevatedButton(
+  //                   onPressed: _onRecordVideoPressed,
+  //                   style: ElevatedButton.styleFrom(
+  //                       fixedSize: const Size(70, 70),
+  //                       shape: const CircleBorder(),
+  //                       backgroundColor: Colors.white,
+  //                       alignment: Alignment.center
+  //                   ),
+  //                   child: Padding(
+  //                     padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 15),
+  //                     child: Icon(
+  //                       Icons.camera,
+  //                       color: Colors.black,
+  //                       // size: 25,
+  //                     ),
+  //                   ),
+  //                 ),
+  //                 SizedBox(width:30),
+  //                 ElevatedButton(
+  //                     onPressed: _Flashlight,
+  //                     style: ElevatedButton.styleFrom(
+  //                         fixedSize: const Size(70,70),
+  //                         shape: const CircleBorder(),
+  //                         backgroundColor: Colors.black
+  //                     ),
+  //                     child: Icon(
+  //                       _isFlashOn ? Icons.flash_on : Icons.flash_off,
+  //                       color: _isFlashOn ? Colors.yellow : Colors.white,
+  //                     )
+  //                 )
+  //               ],
+  //             ),
+  //             const SizedBox(
+  //               height: 35,
+  //             ),
+  //               // ElevatedButton(
+  //               //   onPressed: () {},
+  //               //   style: ElevatedButton.styleFrom(
+  //               //     backgroundColor: Colors.brown,
+  //               //     shape: RoundedRectangleBorder(
+  //               //       borderRadius: BorderRadius.circular(10),
+  //               //     ),
+  //               //   ),
+  //               //   child: Padding(
+  //               //     padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+  //               //     child: Text('Finish Scan', style: TextStyle(fontSize: 20, color: Colors.white)),
+  //               //   ),
+  //               // ),
+  //           ],
+  //         ),
+  //       ),
+  //     );
+  //   } else {
+  //     return const Center(
+  //       child: CircularProgressIndicator(),
+  //     );
+  //   }
+  // }
 
   Future<void> onNewCameraSelected(CameraDescription description) async {
     final previousCameraController = _controller;
@@ -882,7 +941,7 @@ class CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
     // Instantiating the camera controller
     final CameraController cameraController = CameraController(
       description,
-      ResolutionPreset.high,
+      ResolutionPreset.max,
       imageFormatGroup: ImageFormatGroup.jpeg,
 
     );
@@ -915,45 +974,243 @@ class CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
       });
     }
   }
+
+  Future<void> _setFocus(TapUpDetails details, BuildContext context) async {
+    if (_controller == null || !_controller!.value.isInitialized) return;
+
+    final RenderBox renderBox = context.findRenderObject() as RenderBox;
+    final Size previewSize = renderBox.size;
+    final Offset tapPosition = details.localPosition;
+
+    // Convert tap position to camera focus point (values between 0 and 1)
+    final double focusX = tapPosition.dx / previewSize.width;
+    final double focusY = tapPosition.dy / previewSize.height;
+
+    try {
+      await _controller!.setFocusPoint(Offset(focusX, focusY));
+      await _controller!.setExposurePoint(Offset(focusX, focusY));
+    } catch (e) {
+      debugPrint('Focus error: $e');
+    }
+  }
 }
 
-class PreviewPage extends StatelessWidget {
+class PreviewPage extends StatefulWidget {
   final String imagePath;
+
   const PreviewPage({super.key, required this.imagePath});
+
+  @override
+  // _PreviewPageState createState() => _PreviewPageState();
+  State<PreviewPage> createState() => _PreviewPageState();
+}
+
+// class _PreviewPageState extends State<PreviewPage> {
+//   double _imageOffset = 0.0; // Controls vertical position of the image
+//
+//   Future<void> _saveCircularImage() async {
+//     final recorder = ui.PictureRecorder();
+//     final canvas = Canvas(recorder);
+//     final size = const Size(300, 300); // Circular size
+//
+//     // Load image
+//     final ui.Image image = await decodeImageFromList(File(widget.imagePath).readAsBytesSync());
+//
+//     // Draw circular clip
+//     final paint = Paint()..isAntiAlias = true;
+//     final rect = Rect.fromLTWH(0, 0, size.width, size.height);
+//     final path = Path()..addOval(rect);
+//     canvas.clipPath(path);
+//
+//     // Draw image inside circle
+//     final src = Rect.fromLTWH(0, image.height * _imageOffset, image.width.toDouble(), image.height.toDouble());
+//     final dst = Rect.fromLTWH(0, 0, size.width, size.height);
+//     canvas.drawImageRect(image, src, dst, paint);
+//
+//     final img = await recorder.endRecording().toImage(300, 300);
+//     final byteData = await img.toByteData(format: ui.ImageByteFormat.png);
+//     final buffer = byteData!.buffer.asUint8List();
+//
+//     // Save to gallery
+//     final tempPath = '${widget.imagePath}_circular.jpg';
+//     File(tempPath).writeAsBytesSync(buffer);
+//     await Gal.putImage(tempPath);
+//
+//     ScaffoldMessenger.of(context).showSnackBar(
+//       const SnackBar(content: Text('Saved to Gallery!')),
+//     );
+//   }
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(title: const Text('Adjust & Save')),
+//       backgroundColor: Colors.black,
+//       body: Column(
+//         mainAxisAlignment: MainAxisAlignment.center,
+//         children: [
+//           ClipOval(
+//             child: Container(
+//               width: 300,
+//               height: 300,
+//               decoration: BoxDecoration(
+//                 shape: BoxShape.circle,
+//                 image: DecorationImage(
+//                   image: FileImage(File(widget.imagePath)),
+//                   fit: BoxFit.cover,
+//                   alignment: Alignment(0, _imageOffset), // Adjust vertical offset
+//                 ),
+//               ),
+//             ),
+//           ),
+//           const SizedBox(height: 20),
+//           Slider(
+//             value: _imageOffset,
+//             min: -1.0,
+//             max: 1.0,
+//             onChanged: (value) {
+//               setState(() {
+//                 _imageOffset = value;
+//               });
+//             },
+//           ),
+//           const SizedBox(height: 20),
+//           ElevatedButton(
+//             onPressed: _saveCircularImage,
+//             style: ElevatedButton.styleFrom(
+//               backgroundColor: Colors.green,
+//               shape: RoundedRectangleBorder(
+//                 borderRadius: BorderRadius.circular(10),
+//               ),
+//             ),
+//             child: const Padding(
+//               padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+//               child: Text('Save Image', style: TextStyle(fontSize: 20, color: Colors.white)),
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }
+
+class _PreviewPageState extends State<PreviewPage> {
+  double _zoom = 1.0; // Zoom level
+  double _dx = 0.0; // Horizontal position
+  double _dy = 0.0; // Vertical position
+
+  Future<void> _saveCroppedImage() async {
+    final ui.PictureRecorder recorder = ui.PictureRecorder();
+    final Canvas canvas = Canvas(recorder);
+    final Paint paint = Paint();
+
+    final File imageFile = File(widget.imagePath);
+    final Uint8List imageBytes = await imageFile.readAsBytes();
+    final ui.Image img = await decodeImageFromList(imageBytes);
+
+    final double size = img.width.toDouble(); // Maintain original size
+    final double cropSize = 600;
+
+    // Compute source cropping rectangle
+    final Rect srcRect = Rect.fromCenter(
+      center: Offset(
+        img.width / 2 - _dx * img.width / 2,
+        img.height / 2 - _dy * img.height / 2,
+      ),
+      width: img.width / _zoom,
+      height: img.height / _zoom,
+    );
+
+    // Destination is a centered circle at full resolution
+    final Rect dstRect = Rect.fromLTWH(0, 0, cropSize, cropSize);
+
+    // Clip to a circular region
+    Path circlePath = Path()..addOval(dstRect);
+    canvas.clipPath(circlePath);
+
+    // Draw high-quality cropped image inside circular mask
+    canvas.drawImageRect(img, srcRect, dstRect, paint);
+
+    // Convert to PNG
+    final ui.Image croppedImage = await recorder.endRecording().toImage(
+      cropSize.toInt(), cropSize.toInt(),
+    );
+
+    final ByteData? byteData = await croppedImage.toByteData(
+      format: ui.ImageByteFormat.png,
+    );
+
+    if (byteData != null) {
+      final File savedFile = File('${widget.imagePath}_cropped.png');
+      await savedFile.writeAsBytes(byteData.buffer.asUint8List());
+
+      await Gal.putImage(savedFile.path);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Circular image saved to gallery!")),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Preview')),
-
+      appBar: AppBar(title: const Text('Adjust & Save')),
       backgroundColor: Colors.black,
-         body: Padding(
-             padding:  EdgeInsets.all(20),
-             child: Column(
-               mainAxisAlignment: MainAxisAlignment.center,
-               crossAxisAlignment: CrossAxisAlignment.stretch,
-               children: [
-                  Image.file(File(imagePath)),
-                  SizedBox(height:30),
-                  ElevatedButton(
-                   onPressed: () => Navigator.pushNamed(context,'/home'),
- 
-                   style: ElevatedButton.styleFrom(
-                     backgroundColor: Colors.brown,
-                     shape: RoundedRectangleBorder(
-                       borderRadius: BorderRadius.circular(10),
-                     ),
-                   ),
-                   child: Padding(
-                     padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-                     child: Text('Home', style: TextStyle(fontSize: 20, color: Colors.white)),
-                   ),
-                 ),
-               ]
-             )
-         )
+      body: Column(
+        children: [
+          const SizedBox(height: 20),
+          Expanded(
+            child: Center(
+              child: ClipOval(
+                child: SizedBox(
+                  width: 300,
+                  height: 300,
+                  child: Transform.scale(
+                    scale: _zoom,
+                    child: Transform.translate(
+                      offset: Offset(_dx * 100, _dy * 100),
+                      child: AspectRatio(
+                        aspectRatio: 1, // Keep the image square
+                        child: Image.file(File(widget.imagePath), fit: BoxFit.cover),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 20),
+          _buildSlider('Zoom', _zoom, 1.0, 3.0, (value) => setState(() => _zoom = value)),
+          _buildSlider('Move Left/Right', _dx, -1.0, 1.0, (value) => setState(() => _dx = value)),
+          _buildSlider('Move Up/Down', _dy, -1.0, 1.0, (value) => setState(() => _dy = value)),
+          const SizedBox(height: 20),
+          ElevatedButton(
+            onPressed: _saveCroppedImage,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.brown,
+              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+            ),
+            child: const Text('Save to Gallery', style: TextStyle(fontSize: 20, color: Colors.white)),
+          ),
+          const SizedBox(height: 20),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSlider(String label, double value, double min, double max, ValueChanged<double> onChanged) {
+    return Column(
+      children: [
+        Text(label, style: const TextStyle(color: Colors.white, fontSize: 16)),
+        Slider(
+          value: value,
+          min: min,
+          max: max,
+          onChanged: onChanged,
+          activeColor: Colors.white,
+          inactiveColor: Colors.grey,
+        ),
+      ],
     );
   }
 }
-
-
