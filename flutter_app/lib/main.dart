@@ -555,19 +555,28 @@ class TrainingPage extends StatelessWidget {
               'Training Video',
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 24,
+                fontSize: 40,
               ),
             ),
-            SizedBox(height: 40),
-            Container(
-              width: 250,
-              height: 150,
-              color: Colors.black,
-              child: Icon(
-                Icons.play_arrow,
-                size: 50,
-                color: Colors.white,
+            SizedBox(height: 50),
+            // Container(
+            //   width: 250,
+            //   height: 150,
+            //   color: Colors.black,
+            //   child: Icon(
+            //     Icons.play_arrow,
+            //     size: 50,
+            //     color: Colors.white,
+            //   ),
+            // ),
+            ElevatedButton(
+              onPressed: (){},
+              style: ElevatedButton.styleFrom(
+                fixedSize: const Size(70, 70),
+                // shape: const CircleBorder(),
+                backgroundColor: Colors.red,
               ),
+              child: const Icon(Icons.play_arrow, color: Colors.white),
             ),
             SizedBox(height: 80),
             ElevatedButton(
@@ -800,27 +809,13 @@ class PatientFilePage extends StatelessWidget {
 
 class FileGalleryPage extends StatelessWidget {
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
         backgroundColor: Colors.black,
-
-        title: TextField(
-          decoration: InputDecoration(
-            hintText: 'Patient Name',
-            prefixIcon: Icon(Icons.menu, color: Colors.grey),
-            suffixIcon: Icon(Icons.search, color: Colors.grey),
-            filled: true,
-            fillColor: Colors.grey[850],
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide.none,
-            ),
-          ),
-        ),
+          title: const Text('Patient File')
       ),
 
       body: Padding(
@@ -829,7 +824,6 @@ class FileGalleryPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(height: 10),
-
 
             Align(
               alignment: Alignment.bottomLeft,
@@ -937,6 +931,7 @@ class CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
             ),
           ),
         );
+        await _controller!.setFlashMode(FlashMode.off,);
       }
     }
   }
@@ -1005,90 +1000,6 @@ class CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
   }
 
 
-  // @override
-  // Widget build(BuildContext context) {
-  //   if (_isCameraInitialized) {
-  //     return SafeArea(
-  //       child: Scaffold(
-  //         body: Column(
-  //           children: [
-  //             CameraPreview(_controller!),
-  //             // const SizedBox(
-  //             //   height: 75,
-  //             // ),
-  //             // ClipRRect(
-  //             //   borderRadius: BorderRadius.circular(300),
-  //             //   child: AspectRatio(
-  //             //     aspectRatio: _controller!.value.aspectRatio, // Preserve correct aspect ratio
-  //             //     child: CameraPreview(_controller!),
-  //             //   ),
-  //             // ),
-  //             const SizedBox(
-  //               height: 20,
-  //             ),
-  //             Row(
-  //               mainAxisAlignment: MainAxisAlignment.center,
-  //               children: [
-  //
-  //                 if (!_isRecording) const SizedBox(width: 5),
-  //                 ElevatedButton(
-  //                   onPressed: _onRecordVideoPressed,
-  //                   style: ElevatedButton.styleFrom(
-  //                       fixedSize: const Size(70, 70),
-  //                       shape: const CircleBorder(),
-  //                       backgroundColor: Colors.white,
-  //                       alignment: Alignment.center
-  //                   ),
-  //                   child: Padding(
-  //                     padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 15),
-  //                     child: Icon(
-  //                       Icons.camera,
-  //                       color: Colors.black,
-  //                       // size: 25,
-  //                     ),
-  //                   ),
-  //                 ),
-  //                 SizedBox(width:30),
-  //                 ElevatedButton(
-  //                     onPressed: _Flashlight,
-  //                     style: ElevatedButton.styleFrom(
-  //                         fixedSize: const Size(70,70),
-  //                         shape: const CircleBorder(),
-  //                         backgroundColor: Colors.black
-  //                     ),
-  //                     child: Icon(
-  //                       _isFlashOn ? Icons.flash_on : Icons.flash_off,
-  //                       color: _isFlashOn ? Colors.yellow : Colors.white,
-  //                     )
-  //                 )
-  //               ],
-  //             ),
-  //             const SizedBox(
-  //               height: 35,
-  //             ),
-  //               // ElevatedButton(
-  //               //   onPressed: () {},
-  //               //   style: ElevatedButton.styleFrom(
-  //               //     backgroundColor: Colors.brown,
-  //               //     shape: RoundedRectangleBorder(
-  //               //       borderRadius: BorderRadius.circular(10),
-  //               //     ),
-  //               //   ),
-  //               //   child: Padding(
-  //               //     padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-  //               //     child: Text('Finish Scan', style: TextStyle(fontSize: 20, color: Colors.white)),
-  //               //   ),
-  //               // ),
-  //           ],
-  //         ),
-  //       ),
-  //     );
-  //   } else {
-  //     return const Center(
-  //       child: CircularProgressIndicator(),
-  //     );
-  //   }
-  // }
 
   Future<void> onNewCameraSelected(CameraDescription description) async {
     final previousCameraController = _controller;
@@ -1133,13 +1044,12 @@ class CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
   Future<void> _setFocus(TapUpDetails details, BuildContext context) async {
     if (_controller == null || !_controller!.value.isInitialized) return;
 
-    final RenderBox renderBox = context.findRenderObject() as RenderBox;
-    final Size previewSize = renderBox.size;
-    final Offset tapPosition = details.localPosition;
+    double fullWidth = MediaQuery.of(context).size.width;
+    double cameraHeight = fullWidth * _controller!.value.aspectRatio;
 
     // Convert tap position to camera focus point (values between 0 and 1)
-    final double focusX = tapPosition.dx / previewSize.width;
-    final double focusY = tapPosition.dy / previewSize.height;
+    final double focusX = details.localPosition.dx / fullWidth;
+    final double focusY = details.localPosition.dy / cameraHeight;
 
     try {
       await _controller!.setFocusPoint(Offset(focusX, focusY));
@@ -1156,98 +1066,9 @@ class PreviewPage extends StatefulWidget {
   const PreviewPage({super.key, required this.imagePath});
 
   @override
-  // _PreviewPageState createState() => _PreviewPageState();
   State<PreviewPage> createState() => _PreviewPageState();
 }
 
-// class _PreviewPageState extends State<PreviewPage> {
-//   double _imageOffset = 0.0; // Controls vertical position of the image
-//
-//   Future<void> _saveCircularImage() async {
-//     final recorder = ui.PictureRecorder();
-//     final canvas = Canvas(recorder);
-//     final size = const Size(300, 300); // Circular size
-//
-//     // Load image
-//     final ui.Image image = await decodeImageFromList(File(widget.imagePath).readAsBytesSync());
-//
-//     // Draw circular clip
-//     final paint = Paint()..isAntiAlias = true;
-//     final rect = Rect.fromLTWH(0, 0, size.width, size.height);
-//     final path = Path()..addOval(rect);
-//     canvas.clipPath(path);
-//
-//     // Draw image inside circle
-//     final src = Rect.fromLTWH(0, image.height * _imageOffset, image.width.toDouble(), image.height.toDouble());
-//     final dst = Rect.fromLTWH(0, 0, size.width, size.height);
-//     canvas.drawImageRect(image, src, dst, paint);
-//
-//     final img = await recorder.endRecording().toImage(300, 300);
-//     final byteData = await img.toByteData(format: ui.ImageByteFormat.png);
-//     final buffer = byteData!.buffer.asUint8List();
-//
-//     // Save to gallery
-//     final tempPath = '${widget.imagePath}_circular.jpg';
-//     File(tempPath).writeAsBytesSync(buffer);
-//     await Gal.putImage(tempPath);
-//
-//     ScaffoldMessenger.of(context).showSnackBar(
-//       const SnackBar(content: Text('Saved to Gallery!')),
-//     );
-//   }
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(title: const Text('Adjust & Save')),
-//       backgroundColor: Colors.black,
-//       body: Column(
-//         mainAxisAlignment: MainAxisAlignment.center,
-//         children: [
-//           ClipOval(
-//             child: Container(
-//               width: 300,
-//               height: 300,
-//               decoration: BoxDecoration(
-//                 shape: BoxShape.circle,
-//                 image: DecorationImage(
-//                   image: FileImage(File(widget.imagePath)),
-//                   fit: BoxFit.cover,
-//                   alignment: Alignment(0, _imageOffset), // Adjust vertical offset
-//                 ),
-//               ),
-//             ),
-//           ),
-//           const SizedBox(height: 20),
-//           Slider(
-//             value: _imageOffset,
-//             min: -1.0,
-//             max: 1.0,
-//             onChanged: (value) {
-//               setState(() {
-//                 _imageOffset = value;
-//               });
-//             },
-//           ),
-//           const SizedBox(height: 20),
-//           ElevatedButton(
-//             onPressed: _saveCircularImage,
-//             style: ElevatedButton.styleFrom(
-//               backgroundColor: Colors.green,
-//               shape: RoundedRectangleBorder(
-//                 borderRadius: BorderRadius.circular(10),
-//               ),
-//             ),
-//             child: const Padding(
-//               padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-//               child: Text('Save Image', style: TextStyle(fontSize: 20, color: Colors.white)),
-//             ),
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-// }
 
 class _PreviewPageState extends State<PreviewPage> {
   double _zoom = 1.0; // Zoom level
@@ -1264,16 +1085,18 @@ class _PreviewPageState extends State<PreviewPage> {
     final ui.Image img = await decodeImageFromList(imageBytes);
 
     final double size = img.width.toDouble(); // Maintain original size
-    final double cropSize = 600;
+    final double cropSize = 900;
 
     // Compute source cropping rectangle
-    final Rect srcRect = Rect.fromCenter(
+    // final Rect srcRect = Rect.fromCenter(
+    final Rect srcRect = Rect.fromCircle(
       center: Offset(
         img.width / 2 - _dx * img.width / 2,
         img.height / 2 - _dy * img.height / 2,
       ),
-      width: img.width / _zoom,
-      height: img.height / _zoom,
+      // width: img.width / _zoom,
+      // height: img.height / _zoom,
+      radius: img.width/_zoom,
     );
 
     // Destination is a centered circle at full resolution
@@ -1301,7 +1124,7 @@ class _PreviewPageState extends State<PreviewPage> {
 
       await Gal.putImage(savedFile.path);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Circular image saved to gallery!")),
+        const SnackBar(content: Text("Image saved to gallery!")),
       );
     }
   }
@@ -1309,7 +1132,7 @@ class _PreviewPageState extends State<PreviewPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Adjust & Save')),
+      appBar: AppBar(title: const Text('Adjust Image')),
       backgroundColor: Colors.black,
       body: Column(
         children: [
@@ -1335,7 +1158,7 @@ class _PreviewPageState extends State<PreviewPage> {
             ),
           ),
           const SizedBox(height: 20),
-          _buildSlider('Zoom', _zoom, 1.0, 3.0, (value) => setState(() => _zoom = value)),
+          _buildSlider('Zoom', _zoom, 1.0, 5.0, (value) => setState(() => _zoom = value)),
           _buildSlider('Move Left/Right', _dx, -1.0, 1.0, (value) => setState(() => _dx = value)),
           _buildSlider('Move Up/Down', _dy, -1.0, 1.0, (value) => setState(() => _dy = value)),
           const SizedBox(height: 20),
