@@ -2,11 +2,13 @@ import 'dart:io';
 import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:video_player/video_player.dart';
+// import 'package:video_player/video_player.dart';
 import 'package:camera/camera.dart';
 import 'package:gal/gal.dart';
 import 'dart:ui' as ui;
 import 'dart:typed_data';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:image_picker/image_picker.dart';
 
 void main() {
   runApp(MyApp());
@@ -276,13 +278,9 @@ class HomePage extends StatelessWidget {
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(Icons.arrow_back, color: Colors.black),
-                  SizedBox(width: 10),
-                  Text('Back', style: TextStyle(color: Colors.black, fontSize: 20)),
-                ],
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 15),
+                child: Text('Sign out', style: TextStyle(fontSize: 18, color: Colors.white)),
               ),
             ),
           ],
@@ -543,6 +541,15 @@ class SetupPage extends StatelessWidget {
 }
 
 class TrainingPage extends StatelessWidget {
+
+  _launchurl() async {
+    final Uri _url = Uri.parse('https://flutter.dev');
+
+    if (!await launchUrl(_url)) {
+      throw Exception('Could not launch $_url');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -559,21 +566,14 @@ class TrainingPage extends StatelessWidget {
               ),
             ),
             SizedBox(height: 50),
-            // Container(
-            //   width: 250,
-            //   height: 150,
-            //   color: Colors.black,
-            //   child: Icon(
-            //     Icons.play_arrow,
-            //     size: 50,
-            //     color: Colors.white,
-            //   ),
-            // ),
+
             ElevatedButton(
-              onPressed: (){},
+              onPressed: _launchurl,
               style: ElevatedButton.styleFrom(
-                fixedSize: const Size(70, 70),
-                // shape: const CircleBorder(),
+                padding: EdgeInsets.symmetric(vertical: 12, horizontal: 40),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
                 backgroundColor: Colors.red,
               ),
               child: const Icon(Icons.play_arrow, color: Colors.white),
@@ -805,9 +805,24 @@ class PatientFilePage extends StatelessWidget {
   }
 }
 
-// FileGalleryPage
 
-class FileGalleryPage extends StatelessWidget {
+class FileGalleryPage extends StatefulWidget {
+  @override
+  _FileGalleryPageState createState() => _FileGalleryPageState();
+}
+
+class _FileGalleryPageState extends State<FileGalleryPage> {
+  File? _patientImage;
+
+  Future<void> _pickLatestImage() async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+    if (image != null) {
+      setState(() {
+        _patientImage = File(image.path);
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -815,35 +830,59 @@ class FileGalleryPage extends StatelessWidget {
       backgroundColor: Colors.black,
       appBar: AppBar(
         backgroundColor: Colors.black,
-          title: const Text('Patient File')
+        title: const Text('Patient File'),
       ),
-
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: 10),
-
-            Align(
-              alignment: Alignment.bottomLeft,
-              child: ElevatedButton(
-                onPressed: () => Navigator.pop(context),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.grey,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.arrow_back, color: Colors.black),
-                    SizedBox(width: 10),
-                    Text('Back', style: TextStyle(color: Colors.black, fontSize: 20)),
-                  ],
+            ElevatedButton(
+              onPressed: _pickLatestImage,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.brown,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
                 ),
               ),
+              child: Text('Select Patient Image', style: TextStyle(color: Colors.white, fontSize: 20)),
+            ),
+            SizedBox(height: 15),
+            _patientImage != null ? Container(
+              width: 150,
+              height: 150,
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.white),
+                borderRadius: BorderRadius.circular(10),
+                image: DecorationImage(
+                  image: FileImage(_patientImage!),
+                  fit: BoxFit.cover,
+                ),
+              ),
+            )
+                : Container(
+              width: 150,
+              height: 150,
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.white),
+                borderRadius: BorderRadius.circular(10),
+                color: Colors.grey,
+              ),
+              child: Icon(Icons.image, color: Colors.white, size: 50),
+            ),
+
+
+            SizedBox(height: 60),
+            ElevatedButton(
+              onPressed: (){},
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.grey,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              child: Text('Upload to Cloud',
+                  style: TextStyle(color: Colors.black, fontSize: 20)),
             ),
           ],
         ),
