@@ -357,7 +357,7 @@ class DisclaimerPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Retina Scan Consent"),
-        backgroundColor: Colors.indigo,
+        backgroundColor: Colors.black,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -1175,7 +1175,7 @@ class _PreviewPageState extends State<PreviewPage> {
       backgroundColor: Colors.black,
       body: Column(
         children: [
-          const SizedBox(height: 20),
+          const SizedBox(height: 10),
           Expanded(
             child: Center(
               child: ClipOval(
@@ -1196,11 +1196,11 @@ class _PreviewPageState extends State<PreviewPage> {
               ),
             ),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 15),
           _buildSlider('Zoom', _zoom, 1.0, 5.0, (value) => setState(() => _zoom = value)),
           _buildSlider('Move Left/Right', _dx, -1.0, 1.0, (value) => setState(() => _dx = value)),
           _buildSlider('Move Up/Down', _dy, -1.0, 1.0, (value) => setState(() => _dy = value)),
-          const SizedBox(height: 20),
+          const SizedBox(height: 10),
           ElevatedButton(
             onPressed: _saveCroppedImage,
             style: ElevatedButton.styleFrom(
@@ -1209,7 +1209,15 @@ class _PreviewPageState extends State<PreviewPage> {
             ),
             child: const Text('Save to Gallery', style: TextStyle(fontSize: 20, color: Colors.white)),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 10),
+          ElevatedButton(
+            onPressed: () => Navigator.pushNamed(context,'/home'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.blueGrey,
+              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+            ),
+            child: const Text('home', style: TextStyle(fontSize: 20, color: Colors.white)),
+          ),
         ],
       ),
     );
@@ -1218,7 +1226,10 @@ class _PreviewPageState extends State<PreviewPage> {
   Widget _buildSlider(String label, double value, double min, double max, ValueChanged<double> onChanged) {
     return Column(
       children: [
-        Text(label, style: const TextStyle(color: Colors.white, fontSize: 16)),
+        Text(
+            label,
+            style: const TextStyle(color: Colors.white, fontSize: 16)
+        ),
         Slider(
           value: value,
           min: min,
