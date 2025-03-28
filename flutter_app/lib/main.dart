@@ -543,7 +543,7 @@ class SetupPage extends StatelessWidget {
 class TrainingPage extends StatelessWidget {
 
   _launchurl() async {
-    final Uri _url = Uri.parse('https://flutter.dev');
+    final Uri _url = Uri.parse('https://youtu.be/z5F3y-h_8jY');
 
     if (!await launchUrl(_url)) {
       throw Exception('Could not launch $_url');
