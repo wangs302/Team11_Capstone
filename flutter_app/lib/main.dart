@@ -271,7 +271,7 @@ class HomePage extends StatelessWidget {
             ),
             SizedBox(height: 40),
             ElevatedButton(
-              onPressed: () => Navigator.pop(context),
+              onPressed: () => Navigator.pushNamed(context, '/'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.grey,
                 shape: RoundedRectangleBorder(
@@ -1130,8 +1130,8 @@ class _PreviewPageState extends State<PreviewPage> {
     // final Rect srcRect = Rect.fromCenter(
     final Rect srcRect = Rect.fromCircle(
       center: Offset(
-        img.width / 2 - _dx * img.width / 2,
-        img.height / 2 - _dy * img.height / 2,
+        img.width / 2 - _dx * img.width / 4,
+        img.height / 2 - _dy * img.height / 4,
       ),
       // width: img.width / _zoom,
       // height: img.height / _zoom,
@@ -1216,7 +1216,7 @@ class _PreviewPageState extends State<PreviewPage> {
               backgroundColor: Colors.blueGrey,
               padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
             ),
-            child: const Text('home', style: TextStyle(fontSize: 20, color: Colors.white)),
+            child: const Text('Home', style: TextStyle(fontSize: 20, color: Colors.white)),
           ),
         ],
       ),
